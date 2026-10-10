@@ -48,7 +48,18 @@ func TestLinuxProductionGateway(t *testing.T) {
 	if helperErr == nil {
 		os.WriteFile(filepath.Join(bin, "nas-login"), helper, 0755)
 	}
-	command := exec.Command(binary, "--socket", socket, "--home", home, "--web", web)
+	// The runner's checkout can live below a private HOME that UID700 cannot
+	// traverse. Copy the exact production binary into this isolated fixture
+	// instead of broadening permissions on the runner's directories.
+	production, e := os.ReadFile(binary)
+	if e != nil {
+		t.Fatal(e)
+	}
+	fixtureBinary := filepath.Join(bin, "fnterminal")
+	if e := os.WriteFile(fixtureBinary, production, 0755); e != nil {
+		t.Fatal(e)
+	}
+	command := exec.Command(fixtureBinary, "--socket", socket, "--home", home, "--web", web)
 	command.Env = append(os.Environ(), "TRIM_APPDEST="+dir)
 	command.SysProcAttr = &syscall.SysProcAttr{Credential: &syscall.Credential{Uid: 700, Gid: 700}}
 	command.Stdout = os.Stdout
