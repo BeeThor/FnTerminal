@@ -1,0 +1,1 @@
+export function formatKeyBinding(binding:any,isMac=false):string {return binding ? [binding.ctrl?'Ctrl':'',binding.meta?(isMac?'⌘':'Meta'):'',binding.alt?'Alt':'',binding.shift?'Shift':'',binding.key].filter(Boolean).join('+'):''}

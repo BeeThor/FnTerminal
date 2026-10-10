@@ -1,0 +1,8 @@
+#!/bin/bash
+set -euo pipefail
+for utility in bash flock nohup stat readlink awk; do
+  if ! command -v "$utility" >/dev/null; then
+    printf 'FnTerminal 缺少系统命令：%s\n' "$utility" > "${TRIM_TEMP_LOGFILE:-/dev/null}"
+    exit 1
+  fi
+done

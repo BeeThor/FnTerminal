@@ -1,0 +1,25 @@
+node_modules/
+.cache/
+.tools/
+.upstream/
+.build/
+dist/
+test-results/
+packaging/app/web/
+packaging/app/bin/fnterminal
+.DS_Store
+**/.DS_Store
+__pycache__/
+*.pyc
+*.bak
+
+.test-linux/
+
+# Local credentials and editor files
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+.vscode/
+.idea/

@@ -1,0 +1,31 @@
+{
+  "name": "fnterminal-ui",
+  "private": true,
+  "version": "0.9.0",
+  "type": "module",
+  "scripts": {
+    "build": "python3 scripts/make-icons.py && vite build",
+    "assets": "python3 scripts/make-icons.py && vite build",
+    "check": "vue-tsc --noEmit",
+    "test": "node --test tests/frontend.test.mjs",
+    "test:browser": "node tests/browser.mjs"
+  },
+  "dependencies": {
+    "@douyinfe/semi-theme-default": "2.104.0",
+    "@fontsource-variable/jetbrains-mono": "5.2.8",
+    "@lucide/vue": "1.16.0",
+    "@xterm/addon-fit": "0.11.0",
+    "@xterm/addon-search": "0.16.0",
+    "@xterm/xterm": "6.0.0",
+    "element-plus": "2.13.6",
+    "vue": "3.5.35"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "6.0.8",
+    "playwright": "1.62.1",
+    "sass": "1.105.1",
+    "typescript": "5.9.3",
+    "vite": "8.2.2",
+    "vue-tsc": "2.2.12"
+  }
+}

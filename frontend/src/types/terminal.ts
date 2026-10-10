@@ -1,0 +1,1 @@
+export interface TerminalTab {id:string;name:string;type:'terminal';panelId:string;locked:boolean;status:string;mode:'application'|'nas';sshPort?:number;connection?:import('../services/connections').SSHConnection;connectionRevision:number;problem?:import('../services/transport').ConnectionProblem}

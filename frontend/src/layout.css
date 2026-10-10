@@ -1,0 +1,154 @@
+/* Geometry and text overflow rules shared by the fnOS/Semi-themed interface. */
+:root { --fn-dialog-gap: 16px; }
+.el-overlay-dialog {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: var(--fn-visible-height, 100dvh);
+  bottom: auto;
+  padding: max(var(--fn-dialog-gap), env(safe-area-inset-top, 0px)) max(var(--fn-dialog-gap), env(safe-area-inset-right, 0px)) max(var(--fn-dialog-gap), env(safe-area-inset-bottom, 0px)) max(var(--fn-dialog-gap), env(safe-area-inset-left, 0px));
+  overflow: hidden;
+}
+.el-dialog {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  max-width: 100%;
+  max-height: calc(var(--fn-visible-height, 100dvh) - var(--fn-dialog-gap) - var(--fn-dialog-gap));
+  margin: 0;
+  overflow: hidden;
+}
+.el-dialog__header, .el-dialog__footer { flex: none; min-width: 0; }
+.el-dialog__header { padding-bottom: 16px; }
+.el-dialog__title { overflow-wrap: anywhere; }
+.el-dialog__body {
+  min-width: 0;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
+}
+.el-dialog__footer, .ssh-connection-dialog .el-dialog__footer, .diagnostics-dialog .el-dialog__footer {
+  position: static;
+  bottom: auto;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 0;
+  padding-top: 16px;
+  padding-bottom: 0;
+  background: var(--bg-elevated);
+}
+.el-dialog__footer .el-button + .el-button { margin-left: 0; }
+.connection-workspace, .connection-editor, .connection-library { min-width: 0; }
+.connection-workspace { grid-template-columns: minmax(160px, 210px) minmax(0, 1fr); gap: 20px; }
+.connection-form, .connection-row, .connection-row > div { min-width: 0; }
+.connection-row { grid-template-columns: 110px minmax(0, 1fr); gap: 12px; }
+.connection-editor-heading > div { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; min-width: 0; }
+.connection-draft-badge { margin-left: 0; }
+.connection-option { align-items: flex-start; line-height: 1.6; }
+.connection-option input { flex: none; margin-top: 2px; }
+.saved-connection { min-width: 0; align-items: flex-start; }
+.saved-connection-icon, .saved-connection-check { flex: none; margin-top: 2px; }
+.saved-connection-copy strong {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  line-height: 1.45;
+}
+.saved-connection-copy small { display: block; max-width: 100%; }
+.connection-save-feedback, .connection-save-feedback > div { min-width: 0; }
+.connection-save-feedback small, .connection-error, .dialog-hint, .connection-draft-guard, .connection-undo,
+.diagnostic-current, .diagnostic-phase, .diagnostic-events li > div { overflow-wrap: anywhere; }
+.connection-save-feedback span:not(.connection-feedback-icon) { line-height: 1.6; }
+.connection-draft-guard > div { flex-wrap: wrap; }
+.connection-undo { align-items: flex-start; }
+.connection-undo > span { flex: 1; min-width: 0; }
+.connection-undo button { flex: none; }
+.diagnostic-current > strong { line-height: 1.5; }
+.diagnostic-events li > div > div { flex-wrap: wrap; gap: 4px 12px; }
+.diagnostic-events li time { white-space: nowrap; }
+.diagnostic-summary > div { min-width: 0; }
+.diagnostic-record { overflow-wrap: anywhere; word-break: normal; }
+.diagnostic-privacy { line-height: 1.6; }
+.copy-text { max-width: 100%; min-width: 0; resize: vertical; }
+.status-bar { height: 28px; min-height: 28px; min-width: 0; gap: 8px; }
+.status-dot, .status-bar .account, .encoding { flex: none; }
+.status-label { flex: 0 1 auto; min-width: 0; max-width: 45%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.connection-target { flex: 1; min-width: 0; max-width: none; }
+.status-bar .account { margin-left: auto; white-space: nowrap; }
+.session-notice {
+  width: min(640px, calc(100% - 24px));
+  max-width: none;
+  max-height: calc(100% - 24px);
+  bottom: 12px;
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  align-items: stretch;
+  gap: 12px;
+}
+.session-notice .session-message { flex: 0 1 auto; min-width: 0; min-height: 0; overflow-wrap: anywhere; line-height: 1.7; max-height: 35dvh; overflow-y: auto; }
+.session-actions { display: flex; flex: none; gap: 8px; justify-content: flex-end; flex-wrap: wrap; }
+.session-actions button { min-height: 32px; }
+.notice { width: max-content; max-width: calc(100vw - 24px); max-height: 35dvh; overflow-y: auto; overflow-wrap: anywhere; line-height: 1.6; }
+.terminal-search-bar { max-width: calc(100% - 16px); min-width: 0; }
+.terminal-search-bar .search-input { min-width: 0; width: clamp(64px, 24vw, 160px); }
+.terminal-search-bar .search-btn { flex: none; }
+@media (max-width: 760px) {
+  .connection-workspace { grid-template-columns: minmax(0, 1fr); gap: 16px; }
+  .connection-library { padding: 0 0 14px; border-right: 0; border-bottom: 1px solid var(--border-subtle); }
+  .connection-library-empty { display: none; }
+  .saved-connection-list { max-height: 160px; }
+  .connection-editor .connection-row { grid-template-columns: 110px minmax(0, 1fr); gap: 12px; }
+}
+@media (max-width: 480px) {
+  :root { --fn-dialog-gap: 12px; }
+  .el-dialog { padding: 16px; }
+  .el-dialog__footer, .ssh-connection-dialog .el-dialog__footer, .diagnostics-dialog .el-dialog__footer { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .el-dialog__footer .el-button { min-width: 0; width: 100%; min-height: 36px; }
+  .el-dialog__footer .el-button--primary { grid-column: 1 / -1; }
+  .el-dialog__footer .diagnostic-privacy { grid-column: 1 / -1; width: auto; margin-right: 0; }
+  .connection-editor .connection-row { grid-template-columns: minmax(0, 1fr); gap: 12px; }
+  .connection-option { margin-bottom: 12px; }
+  .session-actions { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .session-actions button { min-width: 0; white-space: normal; padding: 6px; min-height: 36px; }
+  .status-bar { padding: 0 8px; gap: 6px; }
+  .status-label { max-width: 50%; }
+  .status-bar .account, .encoding { display: none; }
+}
+@media (max-height: 480px) {
+  :root { --fn-dialog-gap: 8px; }
+  .el-dialog { padding: 12px 16px; }
+  .el-dialog__header { padding-bottom: 12px; }
+  .el-dialog__footer, .ssh-connection-dialog .el-dialog__footer, .diagnostics-dialog .el-dialog__footer { padding-top: 12px; }
+  .saved-connection-list { max-height: 110px; }
+}
+
+.conn-context-menu, .menu-submenu { max-width: min(320px, calc(100vw - 16px)); min-width: min(200px, calc(100vw - 16px)); }
+.menu-label { flex: 1; min-width: 0; white-space: normal; overflow-wrap: anywhere; line-height: 1.5; }
+.menu-item.has-shortcut { gap: 12px; }
+.menu-shortcut, .menu-leading-icon, .menu-icon-trailing { flex: none; }
+
+.connection-library-toggle { display: none; border: 0; padding: 0; color: var(--text-primary); background: transparent; align-items: center; gap: 6px; font-size: 14px; font-weight: 600; }
+.connection-library-toggle small { font-weight: 400; color: var(--text-muted); }
+.connection-library-toggle svg { transition: transform .15s; }
+.connection-library-toggle svg.expanded { transform: rotate(180deg); }
+.connection-library-toggle:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
+.el-dialog__body, .session-message { scrollbar-width: thin; scrollbar-color: var(--text-disabled) transparent; }
+@media(max-width:760px) {
+  .connection-library-title { display: none; }
+  .connection-library-toggle { display: inline-flex; min-height: 34px; }
+  .connection-library-content:not(.expanded) { display: none; }
+  .connection-library-heading { margin-bottom: 0; }
+  .connection-library-content.expanded { padding-top: 10px; }
+}
+
+.conn-context-menu.overflow { max-height: calc(var(--fn-visible-height, 100dvh) - 8px); }
+.menu-item.submenu-wrap .menu-label { display: flex; align-items: center; gap: 8px; }

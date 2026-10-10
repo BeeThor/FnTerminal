@@ -1,0 +1,14 @@
+appname=fnterminal
+version=0.9.0
+desc=原生 SSH 终端（独立应用服务账户，NAS 用户二次认证）
+display_name=FnTerminal
+maintainer=community
+platform=x86
+desktop_uidir=ui
+desktop_applaunchname=fnterminal.main
+source=thirdparty
+os_min_version=1.1.3100
+ctl_stop=true
+checkport=false
+disable_authorization_path=true
+changelog=弹窗固定标题与操作区、内容独立滚动；长名称/地址/诊断换行；窄屏和横屏表单自适应；状态栏与断连提示防溢出。

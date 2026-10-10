@@ -1,0 +1,2 @@
+# Preserve upstream source bytes for provenance verification.
+third_party/uniterm/original/** -whitespace

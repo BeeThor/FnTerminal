@@ -1,0 +1,76 @@
+{
+  "repository": "https://github.com/ys-ll/uniterm",
+  "commit": "071df19012a0b4ba26404a92d204a90b327eff55",
+  "archive_sha256": "978ac262128e3a50cf0c3e75ea847c06aa2d897dcd8201be9c9efffc900f0637",
+  "license": "Apache-2.0",
+  "files": [
+    {
+      "path": "frontend/src/components/AppHeader.vue",
+      "sha256": "aad0b1722ab4347e1c7e53d2ebbdf64c476ea4792e924b76b6675481235b7087"
+    },
+    {
+      "path": "frontend/src/components/TabsList.vue",
+      "sha256": "2ed58a95c2767f36d55816f3225cd4c09909c717d3bdd49f3572b9040c7335f8"
+    },
+    {
+      "path": "frontend/src/components/TabItem.vue",
+      "sha256": "c4dd37c71770c0c5fa1fcffa21c1f193cd73552e4591ce941f4d79892c93b6b5"
+    },
+    {
+      "path": "frontend/src/components/BaseTerminal.vue",
+      "sha256": "2ea4a4e546f1612eb5f1aa594ebc3e11972ed2bfff76b7dd3dfa031829a84d1d"
+    },
+    {
+      "path": "frontend/src/components/Menu.vue",
+      "sha256": "95c9d2762b9f1490565aff706d638f5ccfdfd1da12553e8de5e7e8f20ce6eab0"
+    },
+    {
+      "path": "frontend/src/components/MenuItem.vue",
+      "sha256": "a4e34e794c3967d3c0a553de17b73ea2d0e01bb41f819f3d77c7a3998fb6ecf0"
+    },
+    {
+      "path": "frontend/src/components/MenuSubmenu.vue",
+      "sha256": "5f99acc57e46cb855f4682c39e311ed5b3a01547b96deeee4a07e071558f3cdf"
+    },
+    {
+      "path": "frontend/src/components/MenuDivider.vue",
+      "sha256": "b47eea3df49ac16b68cb826d3cb1cc0de6c9b45a2748ec090fdc33c2e514911a"
+    },
+    {
+      "path": "frontend/src/components/MobileKeyBar.vue",
+      "sha256": "19400442dda888b438e308cf724e05f39ca0caf058a506fae43275861f6baec6"
+    },
+    {
+      "path": "frontend/src/utils/platform.ts",
+      "sha256": "3e87a78ca10d6fe54c402168f7f49f230e2b527dfe7714c39a7fd45432770649"
+    },
+    {
+      "path": "frontend/src/utils/mobileCtrlKey.ts",
+      "sha256": "f2de99fe3de87536afe076c59beef2fa7eb564ae6478f86a5781589589ef1903"
+    },
+    {
+      "path": "frontend/src/utils/terminalPaste.ts",
+      "sha256": "1e3face7d61c0c2ebabda4517cc7c382309081a053a42777725e723e5c549f72"
+    },
+    {
+      "path": "frontend/src/utils/formatFontFamily.ts",
+      "sha256": "f1b0bb7862993c0a5f835354067b7e31903ed4c7e854ffb9160abe1fe90a52c3"
+    },
+    {
+      "path": "frontend/src/style.css",
+      "sha256": "57fc054bfd79baa8c45e51bf71d748c2a2da49f447791916b09313b0c0a975d8"
+    },
+    {
+      "path": "frontend/src/composables/useTerminal.ts",
+      "sha256": "6ab7cb146d23cc7a58d26514a520fde264ec0f02b26b30313c065c9751a97770"
+    },
+    {
+      "path": "frontend/src/types/settings.ts",
+      "sha256": "d29562b6ab7a711fbb680dfc96561f42c38ae84b3865f27187c1bda18898e4a7"
+    },
+    {
+      "path": "frontend/src/i18n/locales/zh-CN.json",
+      "sha256": "36aa1019f672c95c2eb32b7dfe22b839d83c817a5a4e07fb5c572966ce4f731e"
+    }
+  ]
+}

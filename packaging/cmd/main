@@ -1,0 +1,83 @@
+#!/bin/bash
+set -euo pipefail
+umask 077
+export PATH=/usr/sbin:/usr/bin:/sbin:/bin
+fail(){ printf '%s\n' "$1" >&2; printf '%s\n' "$1" > "${TRIM_TEMP_LOGFILE:-/dev/null}"; exit 1; }
+trap 'fail "FnTerminal 生命周期失败：操作=${1:-unknown}，行=$LINENO，状态=$?。请检查应用目录权限及应用日志。"' ERR
+: "${TRIM_PKGVAR:?缺少 TRIM_PKGVAR}" "${TRIM_APPDEST:?缺少 TRIM_APPDEST}"
+TRIM_PKGHOME="${TRIM_PKGHOME:-/var/apps/fnterminal/home}"
+TRIM_PKGETC="${TRIM_PKGETC:-/var/apps/fnterminal/etc}"
+# Some fnOS lifecycle phases use the system identity. Re-execute as the fixed
+# package account, keeping only the path variables needed for this lifecycle.
+# privilege still declares run-as=package; neither Go nor PTY may run as root.
+if [[ $(id -u) == 0 ]]; then
+  [[ "${TRIM_USERNAME:-fnterminal}" == fnterminal ]] || fail '包账户配置不匹配。'
+  command -v runuser >/dev/null || fail '系统以 root 调用脚本，但缺少 runuser，无法安全降权。'
+  exec runuser -u fnterminal -- env -i PATH="$PATH" TRIM_USERNAME=fnterminal TRIM_PKGVAR="$TRIM_PKGVAR" TRIM_APPDEST="$TRIM_APPDEST" TRIM_PKGHOME="$TRIM_PKGHOME" TRIM_PKGETC="$TRIM_PKGETC" TRIM_TEMP_LOGFILE="${TRIM_TEMP_LOGFILE:-/dev/null}" /bin/bash "$0" "${1:-}"
+fi
+[[ $(id -un) == fnterminal ]] || fail 'FnTerminal 只能以 fnterminal 独立应用账户运行。'
+PID_FILE="$TRIM_PKGVAR/fnterminal.pid"
+LOG_FILE="$TRIM_PKGVAR/fnterminal.log"
+BIN="$TRIM_APPDEST/bin/fnterminal"
+SOCKET="$TRIM_APPDEST/app.sock"
+mkdir -p "$TRIM_PKGVAR" "$TRIM_PKGHOME" "$TRIM_PKGETC"
+command -v flock >/dev/null || fail '缺少 flock，无法管理并发启停。'
+exec 9>"$TRIM_PKGVAR/service.lock"
+flock -w 15 9 || fail '另一个启停操作尚未完成。'
+process_start(){ awk '{print $22}' "/proc/$1/stat" 2>/dev/null; }
+is_running(){
+  [[ -f "$PID_FILE" ]] || return 1
+  read -r pid born < "$PID_FILE" || return 1
+  [[ "$pid" =~ ^[0-9]+$ && "$born" =~ ^[0-9]+$ ]] || return 1
+  kill -0 "$pid" 2>/dev/null || return 1
+  [[ "$(process_start "$pid")" == "$born" ]] || return 1
+  local actual expected
+  actual="$(readlink "/proc/$pid/exe" 2>/dev/null)"; expected="$(readlink -f "$BIN")"
+  [[ "$actual" == "$expected" || "$actual" == "$expected (deleted)" ]] || return 1
+  [[ "$(awk '{print $3}' "/proc/$pid/stat" 2>/dev/null)" != Z ]] || return 1
+}
+startup_failure(){
+  local cause
+  cause="$(tail -n 5 "$LOG_FILE" 2>/dev/null || true)"
+  fail "FnTerminal 启动失败（保持独立账户权限）。应用日志：${cause:-未产生服务日志，请核对二进制及目录权限。}"
+}
+case "${1:-}" in
+ start)
+  if is_running; then exit 0; fi
+  [[ -x "$BIN" && -r "$TRIM_APPDEST/web/index.html" ]] || fail '缺少终端二进制或前端资源，请重新安装完整 FPK。'
+  gateway_uid=0; socket_gid=-1
+  if [[ -e "$TRIM_PKGETC/gateway.conf" ]]; then
+    [[ -f "$TRIM_PKGETC/gateway.conf" && ! -L "$TRIM_PKGETC/gateway.conf" ]] || fail '网关配置必须是普通文件。'
+    read -r gateway_uid socket_gid extra < "$TRIM_PKGETC/gateway.conf" || fail '网关配置格式错误。'
+    [[ -z "${extra:-}" && "$gateway_uid" =~ ^[0-9]+$ && "$socket_gid" =~ ^(-1|[0-9]+)$ ]] || fail '网关配置格式：UID GID；默认 0 -1。'
+  fi
+  if [[ -f "$LOG_FILE" && $(stat -c %s "$LOG_FILE") -gt 5242880 ]]; then mv -f "$LOG_FILE" "$LOG_FILE.1"; fi
+  nohup "$BIN" --socket "$SOCKET" --web "$TRIM_APPDEST/web" --home "$TRIM_PKGHOME" --gateway-uid "$gateway_uid" --socket-gid "$socket_gid" </dev/null >>"$LOG_FILE" 2>&1 9>&- &
+  pid=$!
+  for ((i=0;i<100;i++)); do
+    kill -0 "$pid" 2>/dev/null || startup_failure
+    if [[ -S "$SOCKET" ]]; then
+      born=$(process_start "$pid")
+      printf '%s %s\n' "$pid" "$born" > "$PID_FILE.tmp"
+      mv "$PID_FILE.tmp" "$PID_FILE"
+      if is_running; then exit 0; fi
+    fi
+    sleep .1
+  done
+  kill -TERM "$pid" 2>/dev/null || true
+  startup_failure
+  ;;
+ stop)
+  if is_running; then
+    kill -TERM "$pid" 2>/dev/null || true
+    for ((i=0;i<100;i++)); do if ! is_running; then break; fi; sleep .1; done
+    if is_running; then fail '服务未正常退出，保留 PID 以供诊断；未跳过终端清理。'; fi
+  fi
+  rm -f "$PID_FILE"
+  if [[ -S "$SOCKET" && ! -L "$SOCKET" ]]; then rm -f "$SOCKET"; fi
+  ;;
+ status)
+  if is_running && [[ -S "$SOCKET" ]]; then exit 0; else exit 3; fi
+  ;;
+ *) fail '用法：main start|stop|status';;
+esac

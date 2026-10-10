@@ -1,0 +1,17 @@
+{
+  ".url": {
+    "fnterminal.main": {
+      "title": "FnTerminal",
+      "icon": "images/icon_{0}.png",
+      "type": "iframe",
+      "protocol": "",
+      "gatewayPrefix": "/app/fnterminal",
+      "gatewaySocket": "app.sock",
+      "url": "/app/fnterminal",
+      "allUsers": false,
+      "control": {
+        "accessPerm": "readonly"
+      }
+    }
+  }
+}

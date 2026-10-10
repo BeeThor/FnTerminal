@@ -1,0 +1,29 @@
+#!/bin/bash
+set -euo pipefail
+umask 077
+if [[ $# -gt 1 ]]; then echo '用法：nas-login [SSH端口]'; exit 2; fi
+ssh_port="${1:-${FNTERMINAL_SSH_PORT:-}}"
+if [[ -z "$ssh_port" ]]; then
+  read -r -p '请输入 NAS SSH 监听端口 [22]: ' ssh_port
+  ssh_port="${ssh_port:-22}"
+fi
+[[ "$ssh_port" =~ ^[0-9]{1,5}$ ]] || { echo 'SSH端口必须是1到65535的整数'; exit 2; }
+ssh_port=$((10#$ssh_port))
+(( ssh_port >= 1 && ssh_port <= 65535 )) || { echo 'SSH端口必须是1到65535的整数'; exit 2; }
+ssh_host="${FNTERMINAL_SSH_HOST:-127.0.0.1}"
+# GUI values are validated by Go; reject option-like or protocol/path input in manual mode too.
+[[ "$ssh_host" =~ ^[a-zA-Z0-9:.][a-zA-Z0-9:.-]*$ && "$ssh_host" != -* ]] || { echo 'SSH主机格式无效'; exit 2; }
+nas_user="${FNTERMINAL_SSH_USER:-}"
+if [[ -z "$nas_user" ]]; then read -r -p '请输入 SSH 用户名: ' nas_user; fi
+[[ "$nas_user" =~ ^[a-zA-Z0-9_][a-zA-Z0-9_.-]*$ ]] || { echo '无效用户名'; exit 1; }
+command -v ssh >/dev/null || { echo 'NAS 未提供 SSH 客户端'; exit 1; }
+mkdir -p "$HOME/.ssh"
+chmod 700 "$HOME/.ssh"
+printf '连接 %s:%s；首次连接请核对 SSH 主机密钥指纹。不会自动开启 SSH。\n' "$ssh_host" "$ssh_port"
+# Ignore shared user/system ssh config to prevent redirects and ProxyCommand;
+# verify changed keys and require explicit confirmation for first-use keys.
+identity_args=(-o IdentitiesOnly=yes -o IdentityAgent=none -o IdentityFile=none)
+for identity in id_ed25519 id_ecdsa id_rsa; do
+  if [[ -r "$HOME/.ssh/$identity" && -f "$HOME/.ssh/$identity" ]]; then identity_args+=(-i "$HOME/.ssh/$identity"); fi
+done
+exec ssh "${identity_args[@]}" -F /dev/null -tt -p "$ssh_port" -o ConnectTimeout=10 -o ServerAliveInterval=15 -o ServerAliveCountMax=3 -o StrictHostKeyChecking=ask -o UserKnownHostsFile="$HOME/.ssh/known_hosts" -o GlobalKnownHostsFile=/dev/null -o ForwardAgent=no -o ClearAllForwardings=yes -o PermitLocalCommand=no -l "$nas_user" "$ssh_host"

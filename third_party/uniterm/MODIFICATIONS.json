@@ -1,0 +1,16 @@
+{
+  "commit": "071df19012a0b4ba26404a92d204a90b327eff55",
+  "modified_files": [
+    "frontend/src/components/AppHeader.vue",
+    "frontend/src/components/TabsList.vue",
+    "frontend/src/components/TabItem.vue",
+    "frontend/src/components/BaseTerminal.vue",
+    "frontend/src/components/Menu.vue",
+    "frontend/src/components/MenuItem.vue",
+    "frontend/src/components/MenuSubmenu.vue",
+    "frontend/src/components/MobileKeyBar.vue",
+    "frontend/src/style.css",
+    "frontend/src/composables/useTerminal.ts",
+    "frontend/src/types/settings.ts"
+  ]
+}

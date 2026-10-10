@@ -1,0 +1,326 @@
+/* Modified by FnTerminal, 2026-10-08: retain Uniterm theme system; remove Wails window decoration and unused protocol/widget rules. Apache-2.0. */
+:root {
+  /* Core palette - near-black window floor against lighter panels, so the
+     layer contrast reads clearly */
+  --bg-base: #0f0f0f;
+  --bg-elevated: #1a1a1a;
+  --bg-surface: #242424;
+  --bg-overlay: #2b2b2b;
+  --bg-hover: #303030;
+  --bg-active: #383838;
+
+  /* Text */
+  --text-primary: #ffffff;
+  --text-secondary: #cccccc;
+  --text-muted: #9a9a9a;
+  --text-disabled: #636363;
+
+  /* Accent - brightened one step so it stays vivid on the near-black base */
+  --accent: #3794ff;
+  --accent-glow: rgba(55, 148, 255, 0.25);
+  --accent-subtle: rgba(55, 148, 255, 0.1);
+
+  /* Info - secondary link/informational blue, distinct from --accent */
+  --info: #4c9df0;
+  --info-subtle: rgba(76, 157, 240, 0.1);
+
+  /* Text/icon color to place on top of a solid --accent fill */
+  --on-accent: #ffffff;
+
+  /* Chart series palette - for multi-series data viz (e.g. system monitor
+     CPU/memory/disk/network) where each series needs a distinct, stable hue
+     independent of the semantic success/warning/error colors. */
+  --chart-1: #4ade80;
+  --chart-2: #60a5fa;
+  --chart-3: #fbbf24;
+  --chart-4: #a78bfa;
+  --chart-4-alt: #c4b5fd;
+
+  /* Semantic */
+  --success: #34d399;
+  --success-dim: #059669;
+  --success-subtle: rgba(52, 211, 153, 0.06);
+  --success-glow: rgba(52, 211, 153, 0.15);
+  --warning: #f59e0b;
+  --warning-subtle: rgba(245, 158, 11, 0.1);
+  --warning-tab: rgba(245, 158, 11, 0.18);
+  --warning-tab-hover: rgba(245, 158, 11, 0.26);
+  --warning-tab-active: rgba(245, 158, 11, 0.24);
+  --error: #f87171;
+  --error-subtle: rgba(248, 113, 113, 0.06);
+  --error-glow: rgba(248, 113, 113, 0.15);
+
+  /* Borders - separators read slightly heavier than hairlines */
+  --border-subtle: rgba(255, 255, 255, 0.16);
+  --border-hover: rgba(255, 255, 255, 0.22);
+
+  /* Shadows */
+  --shadow-sm: 0 1px 0.125rem rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 0.25rem 0.75rem rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.5);
+
+  /* Scrim - dim-out mask for loading/drop overlays. Dark themes use a
+     translucent black; light theme overrides to translucent white so the
+     dark text/spinner on top stays legible. */
+  --scrim: rgba(0, 0, 0, 0.35);
+
+  /* Fonts */
+  --font-ui: -apple-system, 'Microsoft YaHei', 'PingFang SC', 'Noto Sans CJK SC', 'WenQuanYi Micro Hei', sans-serif;
+  --font-mono: 'JetBrains Mono Variable', monospace;
+
+  /* Spacing - two-tier radius: 4px controls, 8px surfaces */
+  --radius-sm: 0.25rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.5rem;
+
+  /* Scrollbar */
+  --scrollbar-thumb: rgba(255, 255, 255, 0.18);
+  --scrollbar-thumb-hover: rgba(255, 255, 255, 0.3);
+
+  /* Element Plus theme overrides */
+  /* Primary color family - align Element Plus internals (el-select focus ring,
+     el-input focus border, el-input-tag focus ring, etc.) with our --accent so
+     they follow the active theme instead of falling back to EP's default #409eff.
+     Kept in :root only; the value resolves against whatever --accent the
+     currently-applied [data-theme] defines. */
+  --el-color-primary: var(--accent);
+  --el-input-focus-border-color: var(--accent);
+  --el-bg-color: #1a1a1a;
+  --el-bg-color-page: #0f0f0f;
+  --el-fill-color-blank: #1f1f1f;
+  --el-fill-color: #1a1a1a;
+  --el-fill-color-light: #262626;
+  --el-fill-color-lighter: #2d2d2d;
+  --el-text-color-primary: #ffffff;
+  --el-text-color-regular: #cccccc;
+  --el-text-color-secondary: #9a9a9a;
+  --el-text-color-placeholder: #636363;
+  --el-border-color: rgba(255, 255, 255, 0.14);
+  --el-border-color-light: rgba(255, 255, 255, 0.1);
+  --el-border-color-lighter: rgba(255, 255, 255, 0.08);
+  /* Loading mask: uniform dark overlay matching the project's .loading-overlay convention (no white flash on refresh) */
+  --el-mask-color: var(--scrim);
+
+  /* Element Plus sizing */
+  --el-input-height: 1.75rem;
+  --el-component-size: 1.75rem;
+
+  /* Element Plus font sizes: rem-based so EP text (tables, dialogs, etc.)
+     follows the UI font size setting applied to the rem root. Baseline is
+     1rem = 16px; EP ships these as fixed px which never scales. */
+  --el-font-size-extra-small: 0.75rem;
+  --el-font-size-small: 0.8125rem;
+  --el-font-size-base: 0.875rem;
+  --el-font-size-medium: 0.875rem;
+  --el-font-size-large: 1.125rem;
+  --el-font-size-extra-large: 1.25rem;
+}
+
+/* Deep blue - oceanic dark */
+[data-theme="deep-blue"] {
+  --bg-base: #0b111e;
+  --bg-elevated: #121c30;
+  --bg-surface: #182338;
+  --bg-overlay: #1e2c49;
+  --bg-hover: #243256;
+  --bg-active: #2b3a5f;
+
+  --text-primary: #ffffff;
+  --text-secondary: #c3cfdd;
+  --text-muted: #8fa1bd;
+  --text-disabled: #5f6f8a;
+
+  --accent: #38bdf8;
+  --accent-glow: rgba(56, 189, 248, 0.18);
+  --accent-subtle: rgba(56, 189, 248, 0.08);
+
+  --info: #5eb3f5;
+  --info-subtle: rgba(94, 179, 245, 0.1);
+  --on-accent: #ffffff;
+
+  --chart-1: #4ade80;
+  --chart-2: #60a5fa;
+  --chart-3: #fbbf24;
+  --chart-4: #a78bfa;
+  --chart-4-alt: #c4b5fd;
+
+  --success: #34d399;
+  --success-dim: #059669;
+  --success-subtle: rgba(52, 211, 153, 0.06);
+  --success-glow: rgba(52, 211, 153, 0.15);
+  --warning: #f59e0b;
+  --warning-subtle: rgba(245, 158, 11, 0.1);
+  --warning-tab: rgba(245, 158, 11, 0.18);
+  --warning-tab-hover: rgba(245, 158, 11, 0.26);
+  --warning-tab-active: rgba(245, 158, 11, 0.24);
+  --error: #f87171;
+  --error-subtle: rgba(248, 113, 113, 0.06);
+  --error-glow: rgba(248, 113, 113, 0.15);
+
+  --border-subtle: rgba(255, 255, 255, 0.16);
+  --border-hover: rgba(255, 255, 255, 0.22);
+
+  --shadow-sm: 0 1px 0.125rem rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 0.25rem 0.75rem rgba(0, 0, 0, 0.5);
+  --shadow-lg: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.6);
+
+  --el-bg-color: #121c30;
+  --el-bg-color-page: #0b111e;
+  --el-fill-color-blank: #182338;
+  --el-fill-color: #121c30;
+  --el-fill-color-light: #1e2c49;
+  --el-fill-color-lighter: #243256;
+  --el-text-color-primary: #ffffff;
+  --el-text-color-regular: #c3cfdd;
+  --el-text-color-secondary: #8fa1bd;
+  --el-text-color-placeholder: #5f6f8a;
+  --el-border-color: rgba(255, 255, 255, 0.14);
+  --el-border-color-light: rgba(255, 255, 255, 0.1);
+  --el-border-color-lighter: rgba(255, 255, 255, 0.08);
+
+  --el-input-height: 1.75rem;
+  --el-component-size: 1.75rem;
+}
+
+[data-theme="light"] {
+  /* Core palette - clean neutral grays */
+  --bg-base: #ffffff;
+  --bg-elevated: #f5f5f5;
+  --bg-surface: #ebebeb;
+  --bg-overlay: #e0e0e0;
+  --bg-hover: #d5d5d5;
+  --bg-active: #c8c8c8;
+
+  /* Text - pure black primary, heavier grays for contrast on white */
+  --text-primary: #000000;
+  --text-secondary: #3d3d3d;
+  --text-muted: #5c5c5c;
+  --text-disabled: #8a8a8a;
+
+  /* Accent - system blue */
+  --accent: #0078d4;
+  --accent-glow: rgba(0, 120, 212, 0.22);
+  --accent-subtle: rgba(0, 120, 212, 0.08);
+
+  --info: #006ab1;
+  --info-subtle: rgba(0, 106, 177, 0.08);
+  --on-accent: #ffffff;
+
+  /* Chart series palette - darker/more saturated than the dark theme's for
+     sufficient contrast against a white background */
+  --chart-1: #16a34a;
+  --chart-2: #2563eb;
+  --chart-3: #d97706;
+  --chart-4: #7c3aed;
+  --chart-4-alt: #a78bfa;
+
+  /* Semantic */
+  --success: #107c41;
+  --success-dim: #0b5e30;
+  --success-subtle: rgba(16, 124, 65, 0.06);
+  --success-glow: rgba(16, 124, 65, 0.15);
+  --warning: #e07b00;
+  --warning-subtle: rgba(224, 123, 0, 0.08);
+  --warning-tab: rgba(224, 123, 0, 0.16);
+  --warning-tab-hover: rgba(224, 123, 0, 0.24);
+  --warning-tab-active: rgba(224, 123, 0, 0.22);
+  --error: #d13438;
+  --error-subtle: rgba(209, 52, 56, 0.06);
+  --error-glow: rgba(209, 52, 56, 0.15);
+
+  /* Borders - cool light grays */
+  --border-subtle: rgba(0, 0, 0, 0.12);
+  --border-hover: rgba(0, 0, 0, 0.18);
+
+  /* Scrim - translucent white so dark loading text stays legible */
+  --scrim: rgba(255, 255, 255, 0.6);
+
+  /* Shadows - cleaner, deeper */
+  --shadow-sm: 0 1px 0.1875rem rgba(0, 0, 0, 0.06);
+  --shadow-md: 0 0.25rem 0.875rem rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 0.5rem 1.75rem rgba(0, 0, 0, 0.1);
+
+  /* Element Plus light theme overrides */
+  --el-bg-color: #ffffff;
+  --el-bg-color-page: #ffffff;
+  --el-fill-color-blank: #ffffff;
+  --el-fill-color: #f5f5f5;
+  --el-fill-color-light: #ebebeb;
+  --el-fill-color-lighter: #e0e0e0;
+  --el-text-color-primary: #000000;
+  --el-text-color-regular: #3d3d3d;
+  --el-text-color-secondary: #6e6e6e;
+  --el-text-color-placeholder: #8a8a8a;
+  --el-border-color: rgba(0, 0, 0, 0.12);
+  --el-border-color-light: rgba(0, 0, 0, 0.08);
+  --el-border-color-lighter: rgba(0, 0, 0, 0.06);
+
+  --el-input-height: 1.75rem;
+  --el-component-size: 1.75rem;
+
+  /* Scrollbar */
+  --scrollbar-thumb: rgba(0, 0, 0, 0.22);
+  --scrollbar-thumb-hover: rgba(0, 0, 0, 0.35);
+}
+
+/* EP computes its --el-color-*-light-N ramps by mixing each hue with WHITE,
+   so on dark themes every hover/active fill built from them (default and
+   danger buttons, dropdown items, inputs...) flashes near-white — the
+   buttons read as colour-inverted. Redefine the ramps once here, mixing
+   toward the theme's own --el-bg-color: dark themes get native darker
+   hovers, the light theme mixes toward white exactly like EP's own ramp.
+   Resolves per theme because --el-color-primary (-> --accent) and
+   --el-bg-color both cascade on :root from the [data-theme] blocks above. */
+:root {
+  --el-color-primary-light-3: color-mix(in srgb, var(--el-color-primary) 70%, var(--el-bg-color));
+  --el-color-primary-light-5: color-mix(in srgb, var(--el-color-primary) 50%, var(--el-bg-color));
+  --el-color-primary-light-7: color-mix(in srgb, var(--el-color-primary) 30%, var(--el-bg-color));
+  --el-color-primary-light-8: color-mix(in srgb, var(--el-color-primary) 20%, var(--el-bg-color));
+  --el-color-primary-light-9: color-mix(in srgb, var(--el-color-primary) 10%, var(--el-bg-color));
+  --el-color-primary-dark-2: color-mix(in srgb, var(--el-color-primary) 80%, black);
+  --el-color-success-light-3: color-mix(in srgb, var(--el-color-success) 70%, var(--el-bg-color));
+  --el-color-success-light-5: color-mix(in srgb, var(--el-color-success) 50%, var(--el-bg-color));
+  --el-color-success-light-7: color-mix(in srgb, var(--el-color-success) 30%, var(--el-bg-color));
+  --el-color-success-light-8: color-mix(in srgb, var(--el-color-success) 20%, var(--el-bg-color));
+  --el-color-success-light-9: color-mix(in srgb, var(--el-color-success) 10%, var(--el-bg-color));
+  --el-color-success-dark-2: color-mix(in srgb, var(--el-color-success) 80%, black);
+  --el-color-warning-light-3: color-mix(in srgb, var(--el-color-warning) 70%, var(--el-bg-color));
+  --el-color-warning-light-5: color-mix(in srgb, var(--el-color-warning) 50%, var(--el-bg-color));
+  --el-color-warning-light-7: color-mix(in srgb, var(--el-color-warning) 30%, var(--el-bg-color));
+  --el-color-warning-light-8: color-mix(in srgb, var(--el-color-warning) 20%, var(--el-bg-color));
+  --el-color-warning-light-9: color-mix(in srgb, var(--el-color-warning) 10%, var(--el-bg-color));
+  --el-color-warning-dark-2: color-mix(in srgb, var(--el-color-warning) 80%, black);
+  --el-color-danger-light-3: color-mix(in srgb, var(--el-color-danger) 70%, var(--el-bg-color));
+  --el-color-danger-light-5: color-mix(in srgb, var(--el-color-danger) 50%, var(--el-bg-color));
+  --el-color-danger-light-7: color-mix(in srgb, var(--el-color-danger) 30%, var(--el-bg-color));
+  --el-color-danger-light-8: color-mix(in srgb, var(--el-color-danger) 20%, var(--el-bg-color));
+  --el-color-danger-light-9: color-mix(in srgb, var(--el-color-danger) 10%, var(--el-bg-color));
+  --el-color-danger-dark-2: color-mix(in srgb, var(--el-color-danger) 80%, black);
+  --el-color-error-light-3: color-mix(in srgb, var(--el-color-error) 70%, var(--el-bg-color));
+  --el-color-error-light-5: color-mix(in srgb, var(--el-color-error) 50%, var(--el-bg-color));
+  --el-color-error-light-7: color-mix(in srgb, var(--el-color-error) 30%, var(--el-bg-color));
+  --el-color-error-light-8: color-mix(in srgb, var(--el-color-error) 20%, var(--el-bg-color));
+  --el-color-error-light-9: color-mix(in srgb, var(--el-color-error) 10%, var(--el-bg-color));
+  --el-color-error-dark-2: color-mix(in srgb, var(--el-color-error) 80%, black);
+  --el-color-info-light-3: color-mix(in srgb, var(--el-color-info) 70%, var(--el-bg-color));
+  --el-color-info-light-5: color-mix(in srgb, var(--el-color-info) 50%, var(--el-bg-color));
+  --el-color-info-light-7: color-mix(in srgb, var(--el-color-info) 30%, var(--el-bg-color));
+  --el-color-info-light-8: color-mix(in srgb, var(--el-color-info) 20%, var(--el-bg-color));
+  --el-color-info-light-9: color-mix(in srgb, var(--el-color-info) 10%, var(--el-bg-color));
+  --el-color-info-dark-2: color-mix(in srgb, var(--el-color-info) 80%, black);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Global monospace baseline: pre/code/kbd/samp would otherwise render in the
+   browser's default mono stack, bypassing JetBrains Mono. Components with
+   their own rules override this as usual. */
+pre, code, kbd, samp {
+  font-family: var(--font-mono);
+}
+
+html {font-size:16px} html,body,#app {width:100%;height:100%;margin:0;overflow:hidden}body {font-family:var(--font-ui);background:var(--bg-base);color:var(--text-primary)}*{box-sizing:border-box}button,input,textarea{font:inherit}button{cursor:pointer}::-webkit-scrollbar{width:8px;height:8px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--scrollbar-thumb);border-radius:4px}::-webkit-scrollbar-thumb:hover{background:var(--scrollbar-thumb-hover)}.el-dialog{background:var(--bg-elevated);color:var(--text-primary)}.el-dialog__title{color:var(--text-primary)}.el-dialog__body{color:var(--text-secondary)}.xterm{height:100%}.xterm-viewport{scrollbar-width:thin}

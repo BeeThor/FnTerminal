@@ -1,0 +1,26 @@
+// Official MIT-licensed Semi theme tokens. Only tokens, no React runtime or widget CSS.
+@use '@douyinfe/semi-theme-default/scss/global.scss';
+body {
+ --font-ui: 'Inter', -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+ --bg-base:var(--semi-color-bg-0); --bg-elevated:var(--semi-color-bg-1); --bg-surface:var(--semi-color-fill-0); --bg-overlay:var(--semi-color-bg-3); --bg-hover:var(--semi-color-fill-1); --bg-active:var(--semi-color-fill-2);
+ --text-primary:var(--semi-color-text-0); --text-secondary:var(--semi-color-text-1); --text-muted:var(--semi-color-text-2); --text-disabled:var(--semi-color-text-3);
+ --accent:var(--semi-color-primary); --accent-subtle:var(--semi-color-primary-light-default); --success:var(--semi-color-success); --warning:var(--semi-color-warning); --error:var(--semi-color-danger);
+ --border-subtle:var(--semi-color-border); --border-hover:var(--semi-color-text-3); --radius-sm:var(--semi-border-radius-small); --radius-md:var(--semi-border-radius-medium); --radius-lg:var(--semi-border-radius-large);
+ --el-bg-color:var(--semi-color-bg-1); --el-bg-color-page:var(--semi-color-bg-0); --el-fill-color-blank:var(--semi-color-fill-0); --el-fill-color:var(--semi-color-fill-0); --el-fill-color-light:var(--semi-color-fill-1); --el-fill-color-lighter:var(--semi-color-fill-2);
+ --el-text-color-primary:var(--semi-color-text-0); --el-text-color-regular:var(--semi-color-text-1); --el-text-color-secondary:var(--semi-color-text-2); --el-text-color-placeholder:var(--semi-color-text-2);
+ --el-border-color:var(--semi-color-border); --el-border-color-light:var(--semi-color-border); --el-border-color-lighter:var(--semi-color-border); --el-color-primary:var(--semi-color-primary); --el-color-danger:var(--semi-color-danger);
+ --el-component-size:32px; --el-input-height:32px; --el-font-size-base:14px; --el-border-radius-base:var(--semi-border-radius-small);
+}
+.el-dialog {background:var(--semi-color-bg-1);border-radius:var(--semi-border-radius-large);padding:24px;box-shadow:0 12px 48px var(--semi-color-shadow);border:1px solid var(--semi-color-border)}
+.el-dialog__title{font-size:18px;font-weight:600;line-height:28px}.el-dialog__header{padding-bottom:20px}.el-dialog__footer{padding-top:20px}
+.el-overlay{background:var(--semi-color-overlay-bg)}
+.el-button{height:32px;font-size:14px;border-radius:var(--semi-border-radius-small);font-weight:600;padding:0 12px}
+.el-button:not(.el-button--primary){border-color:transparent;background:var(--semi-color-fill-0);color:var(--semi-color-text-0)}.el-button:not(.el-button--primary):hover{background:var(--semi-color-fill-1)}
+.el-input__wrapper,.el-textarea__inner{border-radius:var(--semi-border-radius-small);background:var(--semi-color-fill-0);box-shadow:0 0 0 1px transparent inset}.el-input__wrapper:hover{box-shadow:0 0 0 1px var(--semi-color-border) inset}.el-input__wrapper.is-focus{box-shadow:0 0 0 1px var(--semi-color-primary) inset}.el-input__inner{height:32px;font-size:14px}
+.connection-workspace{grid-template-columns:210px minmax(0,1fr);gap:24px}.connection-library-heading>span,.connection-section-title{font-size:14px}.connection-form label{font-size:14px}.connection-form{gap:8px;margin-bottom:20px}.connection-row{grid-template-columns:120px minmax(0,1fr);gap:16px}
+.saved-connection{border-radius:var(--semi-border-radius-medium);padding:12px 10px}.saved-connection-copy strong{font-size:14px}.saved-connection-copy small{font-size:11px}.saved-connection.is-selected{background:var(--semi-color-primary-light-default);border-color:transparent}.saved-connection-icon{height:30px;width:30px;border-radius:6px;background:var(--semi-color-fill-0)}
+.connection-save-feedback,.diagnostic-current,.diagnostic-summary>div{border-radius:var(--semi-border-radius-medium)}.connection-save-feedback strong{font-size:14px}.connection-save-feedback small{font-size:11px}.connection-draft-badge{font-size:11px}.connection-option{font-size:12px;line-height:20px}
+.header-btn{height:32px;min-width:32px;border-radius:var(--semi-border-radius-small)}.tab-item.active{background:var(--semi-color-primary-light-default)}
+@media(max-width:640px){.connection-workspace{grid-template-columns:1fr;gap:16px}.el-dialog{padding:18px}.el-dialog__footer .el-button{min-height:36px}.connection-editor .connection-row{grid-template-columns:110px minmax(0,1fr)}}
+
+.conn-context-menu .menu-item{font-size:14px;min-height:32px}.conn-context-menu{border-radius:var(--semi-border-radius-medium)}.diagnostic-summary span,.diagnostic-current p,.dialog-hint{font-size:12px}.diagnostic-events li strong{font-size:14px}.diagnostic-events li time{font-size:11px}

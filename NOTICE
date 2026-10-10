@@ -1,0 +1,25 @@
+FnTerminal
+Copyright (c) 2026 FnTerminal contributors
+
+This application includes source code extracted and adapted from:
+uniTerm (https://github.com/ys-ll/uniterm)
+Copyright 2025 uniTerm
+Apache License, Version 2.0
+Upstream commit: 071df19012a0b4ba26404a92d204a90b327eff55
+
+FnTerminal changes the extracted Vue components to use a browser WebSocket
+transport through the fnOS unified gateway instead of Wails desktop bindings.
+Terminal-only controls replace unsupported desktop protocol, AI and system
+window actions. Modified files contain notices; original sources and hashes
+are preserved in third_party/uniterm. Uniterm's license and third-party notices
+are included in the application. FnTerminal is an independent adaptation.
+
+xterm.js and its addons: MIT; creack/pty: MIT; gorilla/websocket: BSD-2-Clause.
+JetBrains Mono Variable: SIL Open Font License 1.1, Copyright 2020
+The JetBrains Mono Project Authors (https://github.com/JetBrains/JetBrainsMono).
+Additional bundled browser dependency license texts are in app/licenses/npm.
+
+Semi Design default theme tokens: MIT, ByteDance contributors.
+FnTerminal imports the official @douyinfe/semi-theme-default package and maps
+its palette and sizing to the existing Vue controls. It does not redistribute
+proprietary fnOS/FN Connect scripts or claim to use Semi React components.

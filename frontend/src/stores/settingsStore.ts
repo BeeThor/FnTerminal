@@ -1,0 +1,8 @@
+import {reactive,computed} from 'vue'
+const saved = (()=>{try{const value=JSON.parse(localStorage.getItem('fnterminal.preferences')||'{}');return value&&typeof value==='object'&&!Array.isArray(value)?value:{}}catch{return {}}})()
+const settings=reactive({theme:saved.theme==='deep-blue'?'dark':['dark','light'].includes(saved.theme)?saved.theme:'light',autoConnect:saved.autoConnect!==false,nasSshPort:Number.isInteger(saved.nasSshPort)&&saved.nasSshPort>=1&&saved.nasSshPort<=65535?saved.nasSshPort:22,tabCloseButton:'right',showTabShortcutHints:false,keyboard:{newConnection:null},terminal:{theme:typeof saved.terminalTheme==='string'&&saved.terminalTheme.length<=64?saved.terminalTheme:'uniterm-dark',fontSize:[12,13,14,16,18,20].includes(saved.fontSize)?saved.fontSize:14}})
+const store={settings,resolvedAppTheme:computed(()=>settings.theme==='light'?'light':'dark'),save(){try{localStorage.setItem('fnterminal.preferences',JSON.stringify({theme:settings.theme,terminalTheme:settings.terminal.theme,fontSize:settings.terminal.fontSize,nasSshPort:settings.nasSshPort,autoConnect:settings.autoConnect}));return true}catch{if(typeof window!=='undefined')window.dispatchEvent(new CustomEvent('fnterminal:notice',{detail:'浏览器无法保存设置，当前设置仅在本次打开时有效。'}));return false}},updateTheme(value:string){settings.theme=value;document.documentElement.dataset.theme=value;document.body?.setAttribute('theme-mode',value==='light'?'light':'dark');return store.save()}}
+export const useSettingsStore=()=>store
+// Apply recovered preferences without writing storage during module initialization.
+document.documentElement.dataset.theme=settings.theme
+document.body?.setAttribute('theme-mode',settings.theme==='light'?'light':'dark')

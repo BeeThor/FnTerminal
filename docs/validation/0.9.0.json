@@ -1,0 +1,21 @@
+{
+  "version": "0.9.0",
+  "date": "2026-10-10",
+  "local_release_gates": "passed check.sh and browser flow",
+  "check_host": "Darwin/arm64",
+  "browser_qa": "passed local real PTY fixture; simulated NAS identity",
+  "browser_checks": 42,
+  "linux_runtime": "passed isolated Alpine ARM64 VM",
+  "fpk_x86": "passed official fnpack and static archive verification",
+  "fpk_arm": "passed official fnpack and static archive verification",
+  "fnos_installation": "pending user Intel NAS regression",
+  "fnos_upgrade_uninstall_security": "pending",
+  "fnos_ssh": "pending actual NAS authentication",
+  "real_mobile_ime_clipboard": "pending",
+  "arm_fnos_installation": "pending",
+  "ci_remote_run": "pending",
+  "browser_layout_cases": 28,
+  "fnos_desktop_ui_library": "unverified protected NAS desktop; FN Connect public UI is React/Semi",
+  "ui_design": "official MIT Semi theme tokens mapped to Vue controls, not Semi React components",
+  "frontend_unit_tests": 36
+}
