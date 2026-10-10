@@ -21,7 +21,7 @@
           <label for="ssh-host">SSH 主机 / IP</label><ElInput id="ssh-host" v-model="form.host" aria-label="SSH主机" placeholder="127.0.0.1" />
           <div class="connection-row"><div><label for="ssh-port">SSH端口</label><ElInputNumber id="ssh-port" v-model="form.port" :min="1" :max="65535" :precision="0" controls-position="right" aria-label="NAS SSH端口" /></div><div><label for="ssh-user">用户名（可选）</label><ElInput id="ssh-user" v-model="form.username" aria-label="SSH用户名" autocomplete="off" placeholder="留空则在终端输入" /></div></div>
         </div>
-        <p class="dialog-hint">本机 NAS 使用 <code>127.0.0.1</code>，端口填写实际 SSH 端口，例如 <code>10022</code>。地址须从 NAS 可达；密码与主机指纹在终端确认。</p>
+        <p class="dialog-hint">本机 NAS 使用 <code>127.0.0.1</code>，SSH 默认端口为 <code>22</code>；如已修改，请填写实际端口。地址须从 NAS 可达；密码与主机指纹在终端确认。</p>
         <label class="connection-option"><input type="checkbox" v-model="settings.settings.autoConnect" @change="settings.save()" />打开应用时自动连接最近使用的配置</label>
         <p v-if="editing" class="dialog-hint">保存配置不影响现有会话；重新连接只结束当前标签的旧会话。</p>
         <div v-if="pendingAction" class="connection-draft-guard" role="alert"><strong>当前修改尚未保存</strong><span>继续编辑，或放弃修改后继续操作。</span><div><ElButton @click="pendingAction=null">继续编辑</ElButton><ElButton @click="discardDraft">放弃修改</ElButton></div></div>

@@ -15,9 +15,11 @@
 | Intel / AMD，x86_64 | [FnTerminal-0.9.0-x86.fpk](https://github.com/BeeThor/FnTerminal/releases/download/v0.9.0/FnTerminal-0.9.0-x86.fpk) |
 | ARM64 | [FnTerminal-0.9.0-arm.fpk](https://github.com/BeeThor/FnTerminal/releases/download/v0.9.0/FnTerminal-0.9.0-arm.fpk) |
 
+manifest 声明最低 fnOS 版本为 **1.1.3100**，具体设备兼容性仍待真机确认。
+
 1. 使用 Release 中的 `SHA256SUMS` 核对下载文件。
 2. 在 fnOS **应用中心 → 设置 → 手动安装应用** 上传对应 FPK，启用应用。
-3. 使用已登录的 fnOS 管理员账户打开 FnTerminal。首次进入填写 SSH 连接：本机地址为 `127.0.0.1`，端口填写实际 SSH 端口，例如 **10022**；填写 NAS 用户名。
+3. 使用已登录的 fnOS 管理员账户打开 FnTerminal。首次进入填写 SSH 连接：本机地址为 `127.0.0.1`，SSH 默认端口为 **22**，修改过端口时填写实际端口；填写 NAS 用户名。
 4. 点击连接，在终端确认主机指纹并输入密码。应用不会自动开启 SSH，也不保存密码。
 5. 点击标签栏 **＋** 新建连接；从终端菜单编辑当前连接。已保存配置可搜索、修改、删除及导入导出，下次打开可自动连接最近使用的配置。
 
@@ -79,7 +81,7 @@ docs/                 安装验收、架构、上游与验证记录
 third_party/uniterm/  上游原始文件、许可与来源校验
 ```
 
-源码仓库不包含依赖、缓存、原始测试日志及二进制；最终 FPK、源码 ZIP、校验和与验证报告发布在 Releases。
+源码仓库不包含依赖、缓存、原始测试日志及构建产物；最终 FPK、源码 ZIP、校验和与验证报告发布在 Releases。
 
 ## 开源许可
 
