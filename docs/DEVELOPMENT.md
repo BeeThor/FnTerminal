@@ -132,7 +132,7 @@ npm run test:browser
 
 `build-fpk.sh` 为每个架构使用独立staging目录，不改源manifest架构；使用官方fnpack生成包后核对app.tgz的MD5、静态ELF64架构、必需资源、JS/CSS/字体引用、执行位、图标、权限和网关入口，并输出逐包verification.json及SHA256SUMS。fnpack下载记录SHA256，官方未提供独立签名校验，本地哈希不冒充官方认证。
 
-自动化CI见 [.github/workflows/build.yml](../.github/workflows/build.yml)，包含Linux专用对端身份/脱离进程回收测试与两个架构打包；本次尚未远程运行CI。源码梳理与安全/产品修正见 [ARCHITECTURE_REVIEW.md](ARCHITECTURE_REVIEW.md)。
+自动化CI见 [.github/workflows/build.yml](../.github/workflows/build.yml)，包含Linux专用对端身份/脱离进程回收测试与两个架构打包；[完整远程构建已通过](https://github.com/BeeThor/FnTerminal/actions/runs/38018531117)。源码梳理与安全/产品修正见 [ARCHITECTURE_REVIEW.md](ARCHITECTURE_REVIEW.md)。
 
 `release.sh`依次运行Go/前端检查、真实浏览器回归、可用的Apple Silicon内存Linux验证、两个FPK构建、版本/哈希匹配报告及源码归档；任何一步失败即停止。报告始终保留fnOS/真实手机待验证状态，不用本机测试替代安装验收。
 

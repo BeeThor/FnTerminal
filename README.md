@@ -1,5 +1,7 @@
 # FnTerminal
 
+[![Validate and build FPK](https://github.com/BeeThor/FnTerminal/actions/workflows/build.yml/badge.svg)](https://github.com/BeeThor/FnTerminal/actions/workflows/build.yml)
+
 <img src="logo.png" alt="FnTerminal" width="64" />
 
 飞牛 fnOS 原生终端应用，通过应用中心手动安装 FPK。使用统一网关接入 NAS 管理员登录态，通过 WebSocket + PTY 提供交互式终端，再经 SSH 登录目标账户。服务以独立应用账户运行，默认不获取 root 权限。
@@ -69,7 +71,7 @@ npm ci --ignore-scripts --no-audit --no-fund
 python3 scripts/package-source.py
 ```
 
-产物写入 `dist/`。FPK 使用飞牛官方 fnpack，包含架构、资源、执行权限、图标和校验和检查。完整发布回归见 [开发说明](docs/DEVELOPMENT.md#源码与构建)；GitHub Actions 自动执行检查并构建双架构 FPK。
+产物写入 `dist/`。FPK 使用飞牛官方 fnpack，包含架构、资源、执行权限、图标和校验和检查。完整发布回归见 [开发说明](docs/DEVELOPMENT.md#源码与构建)；[GitHub Actions 完整检查与双架构构建已通过](https://github.com/BeeThor/FnTerminal/actions/runs/38018531117)。
 
 ```text
 cmd/fnterminal/        Go 服务、鉴权、PTY 和会话管理

@@ -4,10 +4,13 @@
 
 macOS ARM64/Go1.27.1/Node26.10.0/Chrome；另由Apple Virtualization启动Alpine ARM64内存Linux，内核6.12.110，真实Bash、OpenSSH和Unix Socket。未连接真实 NAS。测试机不挂载主机目录，测试密钥只在虚拟机内临时生成。
 
+发布前另在 GitHub Actions 的 Ubuntu x86_64 runner 完成全套回归及两种架构 FPK 构建，[运行记录](https://github.com/BeeThor/FnTerminal/actions/runs/38018531117)。Release 使用该轮构建的 FPK；隔离 ARM64 虚拟机记录来自此前的同版本运行时验证。
+
 ## 已执行
 
 | 检查 | 结果与证据 |
 |---|---|
+| GitHub Actions | 源码、前端、浏览器、独立UID生产网关与双架构打包通过；[检查记录](https://github.com/BeeThor/FnTerminal/actions/runs/38018531117) |
 | Go | go mod verify、go vet、go test -race通过；Linux专用测试另在实际Linux执行 |
 | 前端 | vue-tsc通过，36项单元测试；包含损坏/不可写配置恢复、严格主机校验、断连原因、移动手势、未ready不得发送、错误保持、SSH失败退出码、超大粘贴可重试、Unicode/ACK/续期 |
 | 生产网关链路 | 实际生产二进制使用UID700；root代理通过真实UDS连接，强制改写Host；HTTP/票据/WS/PTY/诊断均通过，不依赖模拟ConnContext |
@@ -34,7 +37,6 @@ macOS ARM64/Go1.27.1/Node26.10.0/Chrome；另由Apple Virtualization启动Alpine
 - 具体fnOS版本、实际NAS SSH账户/配置、重启及长期运行稳定性。
 - 实际ARM设备FPK安装；隔离ARM Linux执行不等于ARM fnOS安装。
 - 真实手机软键盘/输入法/剪贴板权限与触摸体验；Chrome移动上下文证明浏览器手势处理，模拟可见视口只证明布局逻辑。
-- CI工作流已更新，但本次未在GitHub远程运行。
 
 
 Chrome 中 SSH 网络失败为夹具模拟，真实 SSH 认证证据来自隔离 Linux OpenSSH；两者都不能替代 fnOS 真机验收。版本回归记录见 [CHANGELOG.md](../CHANGELOG.md)。
