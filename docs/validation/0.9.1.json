@@ -1,0 +1,23 @@
+{
+  "version": "0.9.1",
+  "date": "2026-10-31",
+  "local_release_gates": "passed check.sh and browser flow",
+  "check_host": "Linux/x86_64",
+  "browser_qa": "passed local real PTY fixture; simulated NAS identity",
+  "browser_checks": 43,
+  "linux_runtime": "not run by this release script",
+  "fpk_x86": "passed official fnpack and static archive verification",
+  "fpk_arm": "passed official fnpack and static archive verification",
+  "fnos_installation": "pending user Intel NAS regression",
+  "fnos_upgrade_uninstall_security": "pending",
+  "fnos_ssh": "pending actual NAS authentication",
+  "real_mobile_ime_clipboard": "pending",
+  "arm_fnos_installation": "pending",
+  "ci_remote_run": "passed https://github.com/BeeThor/FnTerminal/actions/runs/41185768766",
+  "browser_layout_cases": 28,
+  "fnos_desktop_ui_library": "unverified protected NAS desktop; FN Connect public UI is React/Semi",
+  "ui_design": "official MIT Semi theme tokens mapped to Vue controls, not Semi React components",
+  "frontend_unit_tests": 36,
+  "production_gateway": "passed TestLinuxProductionGateway using packaged x86 binary",
+  "build_commit": "fe1d0f591efdacfe0a987934bf403d4fc4d1ede9"
+}

@@ -6,16 +6,16 @@
 
 飞牛 fnOS 原生终端应用，通过应用中心手动安装 FPK。使用统一网关接入 NAS 管理员登录态，通过 WebSocket + PTY 提供交互式终端，再经 SSH 登录目标账户。服务以独立应用账户运行，默认不获取 root 权限。
 
-**当前版本：0.9.0 预发布。** 本机自动化、隔离 Linux SSH/PTY 与双架构打包检查已通过；真实 fnOS 安装、升级、卸载和权限验收仍待验证。详见 [测试结果](docs/TEST_RESULTS.md) 和 [验收步骤](docs/FNOS_TEST_PLAN.md)。
+**当前版本：0.9.1 预发布。** 本版修复右键、工具栏及子菜单的文字对比度，浅色菜单使用浅底深字，深色菜单使用深灰底浅字；真实 fnOS 安装、升级、卸载和权限验收仍待验证。详见 [测试结果](docs/TEST_RESULTS.md) 和 [验收步骤](docs/FNOS_TEST_PLAN.md)。
 
 ## 下载与安装
 
-从 [v0.9.0 Release](https://github.com/BeeThor/FnTerminal/releases/tag/v0.9.0) 下载：
+从 [v0.9.1 Release](https://github.com/BeeThor/FnTerminal/releases/tag/v0.9.1) 下载：
 
 | 设备 | 安装包 |
 | --- | --- |
-| Intel / AMD，x86_64 | [FnTerminal-0.9.0-x86.fpk](https://github.com/BeeThor/FnTerminal/releases/download/v0.9.0/FnTerminal-0.9.0-x86.fpk) |
-| ARM64 | [FnTerminal-0.9.0-arm.fpk](https://github.com/BeeThor/FnTerminal/releases/download/v0.9.0/FnTerminal-0.9.0-arm.fpk) |
+| Intel / AMD，x86_64 | [FnTerminal-0.9.1-x86.fpk](https://github.com/BeeThor/FnTerminal/releases/download/v0.9.1/FnTerminal-0.9.1-x86.fpk) |
+| ARM64 | [FnTerminal-0.9.1-arm.fpk](https://github.com/BeeThor/FnTerminal/releases/download/v0.9.1/FnTerminal-0.9.1-arm.fpk) |
 
 manifest 声明最低 fnOS 版本为 **1.1.3100**，具体设备兼容性仍待真机确认。
 
@@ -55,7 +55,7 @@ manifest 声明最低 fnOS 版本为 **1.1.3100**，具体设备兼容性仍待�
 
 生产服务只监听 Unix Socket，校验 `SO_PEERCRED` 可信网关对端及管理员 Header；Socket 默认 0600、仅信任 UID 0。**真实 fnOS 网关 UID、ACL 和注销行为仍待核验。** 如需配置实际网关身份，按 [登录态与权限说明](docs/DEVELOPMENT.md#登录态与权限) 操作；不得通过放宽为 666/777 或 root 运行解决鉴权问题。
 
-已通过 Go race/vet/module 校验、36 项前端单元测试、42 项浏览器检查和 28 项布局场景；隔离 ARM64 Linux 验证了真实 UDS 网关、SSH 22/10022 端口、数字用户名及进程回收。真实 fnOS、ARM NAS 和手机输入法/剪贴板仍待验证。[版本验证记录](docs/validation/0.9.0.json)
+本版验证覆盖 Go race/vet/module、36 项前端单元测试、完整浏览器流程及布局回归，新增浅深色界面 × 黑白底色的菜单不透明和文字对比度检查。旧版隔离 ARM64 Linux 验证记录保留在测试文档中。真实 fnOS、ARM NAS 和手机输入法/剪贴板仍待验证。[版本验证记录](docs/validation/0.9.1.json)
 
 ## 开发与构建
 
