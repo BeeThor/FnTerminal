@@ -21,7 +21,7 @@ import (
 	"time"
 )
 
-const version = "0.9.0"
+const version = "0.9.1"
 
 type apiError struct {
 	Code    string `json:"code"`

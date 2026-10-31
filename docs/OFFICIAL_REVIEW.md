@@ -25,3 +25,5 @@
 2026-10-09再次直接获取官方fnpack及统一网关页面：fnpack仍列1.2.3，网关路径/Socket/Header规范未发现本次需要变更之处。0.5.0只改变连接入口与SSH目标配置，不扩展应用权限或终端监听端口。
 
 2026-10-10再次获取官方fnpack和统一网关原文：fnpack仍列1.2.3，网关字段保持一致。0.6.0连接列表与可靠性优化仍采用独立package账户和Unix Socket管理员网关，未增加资源或端口声明。
+
+2026-10-31 通过官方 `https://developer.fnnas.com/llms-full.txt` 再次核对：fnpack 仍为 V1.2.3，使用 `build --directory`；含原生二进制的包分别声明 platform=x86/arm，根图标为64/256 PNG。0.9.1 沿用现有网关与独立应用账户配置。

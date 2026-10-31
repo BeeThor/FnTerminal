@@ -1,4 +1,4 @@
-<!-- Modified by FnTerminal, 2026-10-08: module singleton coordinator, teardown and iframe-safe layering; removed RDP/Wails logic. Original: ys-ll/uniterm, Apache-2.0. -->
+<!-- Modified by FnTerminal, 2026-10-08: module singleton coordinator, teardown and iframe-safe layering; 2026-10-31: opaque theme surfaces and readable menu text; removed RDP/Wails logic. Original: ys-ll/uniterm, Apache-2.0. -->
 <template>
   <Teleport to="body">
     <div
@@ -180,7 +180,7 @@ onBeforeUnmount(()=>deactivate(menuController))
 .conn-context-menu {
   position: fixed;
   z-index: 1100;
-  background: var(--bg-surface);
+  background: var(--bg-overlay);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-sm);
   box-shadow: var(--shadow-md);
@@ -209,7 +209,7 @@ onBeforeUnmount(()=>deactivate(menuController))
   padding: 0.4375rem 0.875rem;
   font-size: 0.75rem;
   font-family: var(--font-ui);
-  color: var(--text-secondary);
+  color: var(--text-primary);
   user-select: none;
   white-space: nowrap;
   border-radius: var(--radius-sm);
@@ -274,7 +274,7 @@ onBeforeUnmount(()=>deactivate(menuController))
   position: fixed;
   /* above the root menu (z-index 99999): the placement overlap paints over it */
   z-index: 1120;
-  background: var(--bg-surface);
+  background: var(--bg-overlay);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-sm);
   box-shadow: var(--shadow-lg);
@@ -287,7 +287,7 @@ onBeforeUnmount(()=>deactivate(menuController))
   padding: 0.4375rem 0.75rem;
   font-size: 0.75rem;
   font-family: var(--font-ui);
-  color: var(--text-secondary);
+  color: var(--text-primary);
   user-select: none;
   white-space: nowrap;
   border-radius: var(--radius-sm);
