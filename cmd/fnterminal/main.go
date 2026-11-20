@@ -15,7 +15,10 @@ import (
 	"time"
 )
 
-const prefix = "/app/fnterminal"
+const (
+	prefix             = "/app/fnterminal"
+	defaultIdleTimeout = time.Hour
+)
 
 type peerKey struct{}
 type peer struct {
@@ -32,7 +35,7 @@ func main() {
 	home := flag.String("home", "", "package home (required)")
 	gateway := flag.Uint("gateway-uid", 0, "verified gateway process UID; never the package UID")
 	group := flag.Int("socket-gid", -1, "verified gateway group; -1 keeps socket mode 0600")
-	idle := flag.Duration("idle-timeout", 15*time.Minute, "timeout without terminal input")
+	idle := flag.Duration("idle-timeout", defaultIdleTimeout, "timeout without terminal input or output")
 	lifetime := flag.Duration("session-timeout", 8*time.Hour, "maximum terminal lifetime")
 	flag.Parse()
 	if os.Geteuid() == 0 {

@@ -1,5 +1,5 @@
 appname=fnterminal
-version=0.9.1
+version=0.9.2
 desc=原生 SSH 终端（独立应用服务账户，NAS 用户二次认证）
 display_name=FnTerminal
 maintainer=community
@@ -11,4 +11,4 @@ os_min_version=1.1.3100
 ctl_stop=true
 checkport=false
 disable_authorization_path=true
-changelog=修复浅色界面叠加深色终端时右键菜单、工具栏菜单及子菜单文字不可读；菜单改用不透明主题浮层背景。
+changelog=修复长命令提前断开。默认空闲超时延长到60分钟，终端输入和输出均会刷新计时，临时续期错误会自动重试。

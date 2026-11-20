@@ -248,6 +248,23 @@ func TestPTYWebSocket(t *testing.T) {
 		}
 	}
 }
+func TestPTYOutputKeepsSessionActive(t *testing.T) {
+	_, s := harness(t, 900*time.Millisecond, time.Minute)
+	c, _ := dial(t, s)
+	command := "for step in 1 2 3 4 5 6; do printf '\\nWORK_%s\\n' \"$step\"; sleep 0.35; done\r"
+	if err := c.WriteJSON(frame{Type: "input", Data: command}); err != nil {
+		t.Fatal(err)
+	}
+	until(t, c, "WORK_6\r\n")
+	for {
+		if _, _, err := c.ReadMessage(); err != nil {
+			if close, ok := err.(*websocket.CloseError); !ok || close.Code != 1008 || close.Text != "idle timeout" {
+				t.Fatal("expected idle timeout after output stopped", err)
+			}
+			return
+		}
+	}
+}
 func TestLeaseBoundToUserAndOrigin(t *testing.T) {
 	m, s := harness(t, time.Minute, time.Hour)
 	c, id := dial(t, s)

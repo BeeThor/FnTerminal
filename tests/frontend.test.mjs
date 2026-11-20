@@ -1,24 +1,32 @@
 import test from 'node:test';import assert from 'node:assert/strict';import {readFileSync} from 'node:fs';import vm from 'node:vm';import ts from 'typescript';
 function load(path,extra={}){const exports={};const source=ts.transpileModule(readFileSync(path,'utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022}}).outputText;vm.runInNewContext(source,{exports,URL,TextEncoder,Uint8Array,ArrayBuffer,AbortSignal,AbortController,setTimeout,clearTimeout,...extra});return exports;}
-async function setup(options={}){const sockets=[],timers=new Map(),states=[],output=[],requests=[];let next=0;class WebSocket{static OPEN=1;constructor(url){this.url=url;this.sent=[];this.bufferedAmount=0;this.readyState=0;sockets.push(this)}send(s){this.sent.push(JSON.parse(s))}open(){this.readyState=1;this.onopen()}message(data){this.onmessage({data})}close(code,reason){this.readyState=3;this.closed={code,reason};this.onclose?.({code,reason})}}
- const env={WebSocket,location:{protocol:'https:',host:'nas.local'},fetch:async(path,init)=>{requests.push({path,init});if(options.failure&&path.endsWith('/api/connect'))return{ok:false,json:async()=>options.failure};if(path.endsWith('/api/bootstrap'))return{ok:true,json:async()=>({protocol:2,csrf:'nonce'})};if(path.endsWith('/api/connect'))return{ok:true,json:async()=>({ticket:'one-use-ticket'})};return{ok:options.lease!==false,status:options.leaseStatus||403,json:async()=>({})}},setInterval:fn=>{timers.set(++next,fn);return next},clearInterval:id=>timers.delete(id)};
- const {TerminalTransport}=load('frontend/src/services/transport.ts',env);const transport=new TerminalTransport((bytes,ack)=>output.push({bytes,ack}),(status,message,problem)=>states.push({status,message,problem}));await transport.connect(options.mode,100,28,options.sshPort,options.connection);return{transport,sockets,timers,states,output,env,requests};}
-function ready(s){s.sockets[0].open();s.sockets[0].message(JSON.stringify({type:'ready',id:'session'}))}
+async function setup(options={}){const sockets=[],timers=new Map(),states=[],output=[],requests=[];let next=0;class WebSocket{static OPEN=1;constructor(url){this.url=url;this.sent=[];this.bufferedAmount=0;this.readyState=0;sockets.push(this)}send(s){this.sent.push(JSON.parse(s))}open(){this.readyState=1;this.onopen()}message(data){this.onmessage({data})}close(code,reason){assert.ok(code===1000||(code>=3000&&code<=4999),'browser close code');this.serverClose(code,reason)}serverClose(code,reason){this.readyState=3;this.closed={code,reason};this.onclose?.({code,reason})}}
+ const env={WebSocket,location:{protocol:'https:',host:'nas.local'},fetch:async(path,init)=>{requests.push({path,init});if(options.failure&&path.endsWith('/api/connect'))return{ok:false,json:async()=>options.failure};if(path.endsWith('/api/bootstrap'))return{ok:true,json:async()=>({protocol:2,csrf:'nonce'})};if(path.endsWith('/api/connect'))return{ok:true,json:async()=>({ticket:'one-use-ticket'})};return{status:options.renewLease?await options.renewLease():204}},setTimeout:(fn,delay)=>{const id=++next;timers.set(id,{fn,delay});return id},clearTimeout:id=>timers.delete(id)};
+ const {TerminalTransport}=load('frontend/src/services/transport.ts',env);const transport=new TerminalTransport((bytes,ack)=>output.push({bytes,ack}),(status,message,problem)=>states.push({status,message,problem}));await transport.connect(options.mode,100,28,options.sshPort,options.connection);return{transport,sockets,timers,states,output,requests};}
+function ready(s,renewal){s.sockets[0].open();s.sockets[0].message(JSON.stringify({type:'ready',id:'session',renewal}))}
+const flushRenewal = () => new Promise(resolve => setImmediate(resolve));
+async function runTimer({timers}, delay) {
+ const timer = [...timers].find(([, timer]) => timer.delay === delay);
+ assert.ok(timer, `expected timer for ${delay} ms`);
+ timers.delete(timer[0]);
+ timer[1].fn();
+ await flushRenewal();
+}
 const inputs=s=>s.sent.filter(f=>f.type==='input').map(f=>f.data).join('');
 test('connection uses HTTP CSRF preparation and a same-origin one-use ticket',async()=>{const s=await setup();assert.equal(s.sockets[0].url,'wss://nas.local/app/fnterminal/ws?ticket=one-use-ticket');assert.equal(s.requests[1].init.headers['X-Fnterminal-Csrf'],'nonce');ready(s);s.transport.input('中文🙂');assert.equal(inputs(s.sockets[0]),'中文🙂');s.transport.stop()});
 test('WebSocket open does not claim a connected PTY before server readiness',async()=>{const s=await setup();s.sockets[0].open();assert.equal(s.states.at(-1).status,'starting');assert.equal(s.transport.input('ignored'),false);assert.equal(s.sockets[0].sent.length,0);s.transport.stop()});
-test('startup error survives subsequent socket close',async()=>{const s=await setup();s.sockets[0].open();s.sockets[0].message(JSON.stringify({type:'error',code:'shell_start',message:'启动失败',detail:'fork/exec EPERM'}));s.sockets[0].close(1006,'');assert.equal(s.states.at(-1).problem.code,'shell_start');assert.equal(s.states.at(-1).problem.detail,'fork/exec EPERM');s.transport.stop()});
+test('startup error survives subsequent socket close',async()=>{const s=await setup();s.sockets[0].open();s.sockets[0].message(JSON.stringify({type:'error',code:'shell_start',message:'启动失败',detail:'fork/exec EPERM'}));s.sockets[0].serverClose(1006,'');assert.equal(s.states.at(-1).problem.code,'shell_start');assert.equal(s.states.at(-1).problem.detail,'fork/exec EPERM');s.transport.stop()});
 test('NAS connection has its own mode and reports SSH unavailability',async()=>{const s=await setup({mode:'nas',failure:{code:'ssh_unavailable',message:'NAS SSH服务未开启'}});assert.equal(JSON.parse(s.requests[1].init.body).mode,'nas');assert.equal(s.sockets.length,0);assert.equal(s.states.at(-1).problem.code,'ssh_unavailable');s.transport.stop()});
 test('output acknowledged only after renderer consumes bytes',async()=>{const s=await setup();ready(s);s.sockets[0].message(new TextEncoder().encode('中文').buffer);assert.equal(s.sockets[0].sent.length,0);s.output[0].ack();assert.equal(s.sockets[0].sent[0].bytes,6);s.transport.stop()});
 test('Unicode chunks preserve surrogate pairs and frame limits',async()=>{const s=await setup();ready(s);const text='🙂'.repeat(5000);s.transport.input(text);assert.equal(inputs(s.sockets[0]),text);for(const f of s.sockets[0].sent)assert.ok(new TextEncoder().encode(f.data).length<=16384);s.transport.stop()});
 test('reconnect ignores old output',async()=>{const s=await setup();ready(s);await s.transport.connect();s.sockets[0].message(new ArrayBuffer(1));assert.equal(s.output.length,0);s.transport.stop()});
 test('oversized input rejected without partial send',async()=>{const s=await setup();ready(s);assert.equal(s.transport.input('x'.repeat(65537)),false);assert.equal(s.sockets[0].sent.length,0);assert.equal(s.transport.input('small retry'),true);s.transport.stop()});
-test('input backpressure closes rather than queues',async()=>{const s=await setup();ready(s);s.sockets[0].bufferedAmount=200000;s.transport.input('abc');assert.equal(s.sockets[0].closed.code,1008);s.transport.stop()});
-test('lease failure retains cause and cancels renewals',async()=>{const s=await setup({lease:false});ready(s);await new Promise(r=>setImmediate(r));assert.equal(s.sockets[0].readyState,3);assert.equal(s.timers.size,0);assert.equal(s.states.at(-1).problem.code,'lease_expired');s.transport.stop()});
+test('input backpressure closes rather than queues',async()=>{const s=await setup();ready(s);s.sockets[0].bufferedAmount=200000;s.transport.input('abc');assert.equal(s.sockets[0].closed.code,4008);s.transport.stop()});
+test('revoked login closes immediately and cancels renewals',async()=>{const s=await setup({renewLease:()=>403});ready(s);await flushRenewal();assert.equal(s.sockets[0].readyState,3);assert.equal(s.timers.size,0);assert.equal(s.states.at(-1).problem.code,'lease_expired');s.transport.stop()});
 test('Uniterm paste normalization preserves multiline content',()=>{const {normalizePastedText,bracketPaste}=load('frontend/src/utils/terminalPaste.ts');assert.equal(normalizePastedText('中文\r\n下一行\r'),'中文\n下一行');assert.equal(bracketPaste('中文',true),'\x1b[200~中文\x1b[201~')});
 test('sticky Ctrl consumes once and preserves Chinese',()=>{const {mobileCtrlArmed,applyMobileCtrl}=load('frontend/src/utils/mobileCtrlKey.ts',{require:()=>({ref:value=>({value})})});mobileCtrlArmed.value=true;assert.equal(applyMobileCtrl('c'),'\x03');assert.equal(applyMobileCtrl('c'),null);mobileCtrlArmed.value=true;assert.equal(applyMobileCtrl('中文'),'中文')});
 
-test('SSH exit status stays visible after close',async()=>{const s=await setup();ready(s);s.sockets[0].message(JSON.stringify({type:'exit',exitCode:255,mode:'nas'}));s.sockets[0].close(1000,'terminal exited');assert.equal(s.states.at(-1).problem.code,'ssh_exit');assert.equal(s.states.at(-1).problem.phase,'SSH会话');s.transport.stop()});
+test('SSH exit status stays visible after close',async()=>{const s=await setup();ready(s);s.sockets[0].message(JSON.stringify({type:'exit',exitCode:255,mode:'nas'}));s.sockets[0].serverClose(1000,'terminal exited');assert.equal(s.states.at(-1).problem.code,'ssh_exit');assert.equal(s.states.at(-1).problem.phase,'SSH会话');s.transport.stop()});
 
 test('configured SSH port is sent and retained on reconnect',async()=>{const s=await setup({mode:'nas',sshPort:10022});assert.equal(JSON.parse(s.requests[1].init.body).sshPort,10022);ready(s);await s.transport.connect();assert.equal(JSON.parse(s.requests.filter(r=>r.path.endsWith('/api/connect')).at(-1).init.body).sshPort,10022);s.transport.stop()});
 
@@ -31,11 +39,52 @@ for(const value of ['null','[]','3','{"theme":{},"terminalTheme":null}','invalid
 test('blocked storage never prevents startup or in-memory preferences',()=>{const {useSettingsStore}=load('frontend/src/stores/settingsStore.ts',{require:()=>({reactive:v=>v,computed:fn=>({value:fn()})}),localStorage:{getItem:()=>{throw Error('SecurityError')},setItem:()=>{throw Error('QuotaExceededError')}},document:{documentElement:{dataset:{}}}});const store=useSettingsStore();store.settings.autoConnect=false;assert.equal(store.save(),false);assert.equal(store.updateTheme('light'),false);assert.equal(store.settings.theme,'light')});
 test('strict SSH host validation accepts IP/domain and separates ports',()=>{const {validSSHHost,formatSSHEndpoint}=load('frontend/src/services/connections.ts');for(const host of ['127.0.0.1','localhost','nas.example','::1','[::1]','2001:db8::1','::ffff:192.0.2.1'])assert.ok(validSSHHost(host),host);for(const host of ['localhost:10022','127.0.0.1:10022','host;command','host..example','https://nas','user@nas','host/path','-oProxyCommand=bad','a'.repeat(64)+'.example','[invalid]'])assert.equal(validSSHHost(host),false,host);assert.equal(formatSSHEndpoint({host:'[::1]',port:10022}),'[::1]:10022')});
 test('remembering a profile handles blocked storage',()=>{const {rememberConnection}=load('frontend/src/services/connections.ts',{localStorage:{setItem:()=>{throw Error('blocked')}}});assert.equal(rememberConnection({profileId:'id'}),false)});
-for(const [reason,code] of [['idle timeout','idle_timeout'],['session timeout','session_timeout'],['authentication lease expired','lease_expired'],['service shutdown','service_stopped']])test('server termination reason survives: '+reason,async()=>{const s=await setup();ready(s);s.sockets[0].close(reason==='service shutdown'?1001:1008,reason);assert.equal(s.states.at(-1).problem.code,code);assert.equal(s.timers.size,0);s.transport.stop()});
-test('server error during lease is distinguished from revoked login',async()=>{const s=await setup({lease:false,leaseStatus:503});ready(s);await new Promise(r=>setImmediate(r));assert.equal(s.states.at(-1).problem.code,'lease_unavailable');assert.equal(s.sockets[0].readyState,3);s.transport.stop()});
+for(const [reason,code] of [['idle timeout','idle_timeout'],['session timeout','session_timeout'],['authentication lease expired','lease_expired'],['service shutdown','service_stopped']])test('server termination reason survives: '+reason,async()=>{const s=await setup();ready(s);s.sockets[0].serverClose(reason==='service shutdown'?1001:1008,reason);assert.equal(s.states.at(-1).problem.code,code);assert.equal(s.timers.size,0);s.transport.stop()});
+test('renewal retries temporary server and network failures on the same connection', async () => {
+ const outcomes = [503, new TypeError('network offline'), 204];
+ const s = await setup({renewLease: () => {
+  const outcome = outcomes.shift();
+  if (outcome instanceof Error) throw outcome;
+  return outcome;
+ }});
+ ready(s);
+ await flushRenewal();
+ for (let i = 0; i < 2; i++) {
+  assert.equal(s.states.at(-1).status, 'connected');
+  assert.equal(s.transport.input('echo still running'), true);
+  await runTimer(s, 5000);
+ }
+ const leaseRequests = s.requests.filter(r => r.path.endsWith('/lease'));
+ assert.equal(leaseRequests.length, 3);
+ assert.ok(leaseRequests.every(r => JSON.parse(r.init.body).id === 'session'));
+ assert.equal(s.sockets.length, 1);
+ assert.deepEqual([...s.timers.values()].map(t => t.delay), [20000]);
+ s.transport.stop();
+ assert.equal(s.timers.size, 0);
+});
+test('server renewal frames renew the lease without a background page timer', async () => {
+ const s = await setup();
+ ready(s, 'server');
+ await flushRenewal();
+ assert.equal(s.timers.size, 0);
+ s.sockets[0].message(JSON.stringify({type:'renew'}));
+ await flushRenewal();
+ assert.equal(s.requests.filter(r => r.path.endsWith('/lease')).length, 2);
+ assert.equal(s.timers.size, 0);
+ s.transport.stop();
+});
+test('failed retries retain the network cause when the service expires the lease', async () => {
+ const s = await setup({renewLease: () => 503});
+ ready(s, 'server');
+ await flushRenewal();
+ assert.equal(s.sockets[0].readyState, 1);
+ s.sockets[0].serverClose(1008, 'authentication lease expired');
+ assert.equal(s.states.at(-1).problem.code, 'lease_unavailable');
+ assert.equal(s.timers.size, 0);
+});
 test('mobile swipe and cancelled gestures do not become terminal keys',()=>{const {MobileKeyGesture}=load('frontend/src/utils/mobileKeyGesture.ts');const g=new MobileKeyGesture();g.begin(200,100);assert.equal(g.move(100,100),-100);assert.equal(g.finish(),false);g.begin(20,20);g.move(23,23);assert.equal(g.finish(),true);g.begin(20,20);g.cancel();assert.equal(g.finish(),false);g.begin(20,20);g.move(20,40);assert.equal(g.finish(),false)});
 
-test('policy and frame limits are reported without claiming a network failure',async()=>{for(const [code,expected] of [[1008,'policy_closed'],[1009,'frame_limit']]){const s=await setup();ready(s);s.sockets[0].close(code,'');assert.equal(s.states.at(-1).problem.code,expected);s.transport.stop()}});
+test('policy and frame limits are reported without claiming a network failure',async()=>{for(const [code,expected] of [[1008,'policy_closed'],[1009,'frame_limit']]){const s=await setup();ready(s);s.sockets[0].serverClose(code,'');assert.equal(s.states.at(-1).problem.code,expected);s.transport.stop()}});
 
 function backup(){const connections=load('frontend/src/services/connections.ts');return load('frontend/src/services/profileBackup.ts',{require:()=>connections})}
 const example={id:'one',name:'我的NAS',host:'127.0.0.1',port:10022,username:'10001'};

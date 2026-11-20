@@ -21,7 +21,7 @@ import (
 	"time"
 )
 
-const version = "0.9.1"
+const version = "0.9.2"
 
 type apiError struct {
 	Code    string `json:"code"`
@@ -143,7 +143,7 @@ func (m *manager) bootstrap(w http.ResponseWriter, r *http.Request, uid string) 
 	m.grants[id] = csrfGrant{uid, time.Now().Add(2 * time.Minute)}
 	m.mu.Unlock()
 	_, sshErr := exec.LookPath("ssh")
-	respondJSON(w, 200, map[string]any{"version": version, "protocol": 2, "csrf": id, "capabilities": map[string]bool{"application": true, "nasSSH": sshErr == nil}, "limits": map[string]int{"tabs": 6, "idleMinutes": 15}})
+	respondJSON(w, 200, map[string]any{"version": version, "protocol": 2, "csrf": id, "capabilities": map[string]bool{"application": true, "nasSSH": sshErr == nil}, "limits": map[string]int{"tabs": 6, "idleMinutes": int(m.idle / time.Minute)}})
 }
 func (m *manager) connect(w http.ResponseWriter, r *http.Request, uid string) {
 	if r.Method != "POST" {

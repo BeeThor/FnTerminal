@@ -19,6 +19,11 @@ import (
 	"github.com/gorilla/websocket"
 )
 
+const (
+	heartbeatInterval = 20 * time.Second
+	pongTimeout       = 45 * time.Second
+)
+
 type frame struct {
 	Type  string `json:"type"`
 	Data  string `json:"data,omitempty"`
@@ -180,8 +185,6 @@ func (m *manager) terminal(w http.ResponseWriter, r *http.Request, uid string) {
 	}()
 	defer workers.Wait() // cancel explicitly before waiting below
 	defer cancel()
-	s.activity.Store(time.Now().UnixNano())
-	s.lease.Store(time.Now().Add(m.leaseTime).UnixNano())
 	shell, err := shellCommand(spec.Mode)
 	if err != nil {
 		return
@@ -274,17 +277,19 @@ func (m *manager) terminal(w http.ResponseWriter, r *http.Request, uid string) {
 	if ctx.Err() != nil {
 		return
 	}
+	started := time.Now()
+	s.activity.Store(started.UnixNano())
+	s.lease.Store(started.Add(m.leaseTime).UnixNano())
 	m.mu.Lock()
 	m.sessions[s.id] = s
 	m.mu.Unlock()
-	started := time.Now()
 	m.audit.add(uid, "session_ready", spec.Mode, "")
 	log.Printf("event=session_start uid=%s session=%s pid=%d peer=%q", uid, s.id, shell.Process.Pid, r.RemoteAddr)
 	defer func() { m.audit.add(uid, "session_end", s.endCause(), "") }()
 	defer func() {
 		log.Printf("event=session_end uid=%s session=%s reason=%q seconds=%.1f", uid, s.id, s.endCause(), time.Since(started).Seconds())
 	}()
-	ready, _ := json.Marshal(map[string]string{"type": "ready", "id": s.id})
+	ready, _ := json.Marshal(map[string]string{"type": "ready", "id": s.id, "renewal": "server"})
 	if write(websocket.TextMessage, ready) != nil {
 		return
 	}
@@ -304,6 +309,7 @@ func (m *manager) terminal(w http.ResponseWriter, r *http.Request, uid string) {
 			}
 			n, e := term.Read(buffer)
 			if n > 0 {
+				s.activity.Store(time.Now().UnixNano())
 				for !output.take(float64(n)) {
 					select {
 					case <-time.After(10 * time.Millisecond):
@@ -330,8 +336,30 @@ func (m *manager) terminal(w http.ResponseWriter, r *http.Request, uid string) {
 			}
 		}
 	}()
-	_ = conn.SetReadDeadline(time.Now().Add(45 * time.Second))
-	conn.SetPongHandler(func(string) error { return conn.SetReadDeadline(time.Now().Add(45 * time.Second)) })
+	_ = conn.SetReadDeadline(time.Now().Add(pongTimeout))
+	conn.SetPongHandler(func(string) error { return conn.SetReadDeadline(time.Now().Add(pongTimeout)) })
+	workers.Add(1)
+	go func() {
+		defer workers.Done()
+		heartbeat := time.NewTicker(heartbeatInterval)
+		defer heartbeat.Stop()
+		for {
+			select {
+			case <-ctx.Done():
+				return
+			case <-heartbeat.C:
+				if conn.WriteControl(websocket.PingMessage, nil, time.Now().Add(time.Second)) != nil {
+					cancel()
+					return
+				}
+				// A WebSocket message can prompt renewal when background page timers are throttled.
+				if write(websocket.TextMessage, []byte(`{"type":"renew"}`)) != nil {
+					cancel()
+					return
+				}
+			}
+		}
+	}()
 	workers.Add(1)
 	go func() {
 		defer workers.Done()
@@ -355,12 +383,6 @@ func (m *manager) terminal(w http.ResponseWriter, r *http.Request, uid string) {
 					_ = conn.WriteControl(websocket.CloseMessage, websocket.FormatCloseMessage(1008, cause), now.Add(time.Second))
 					cancel()
 					return
-				}
-				if now.Unix()%20 == 0 {
-					if conn.WriteControl(websocket.PingMessage, nil, now.Add(time.Second)) != nil {
-						cancel()
-						return
-					}
 				}
 			}
 		}
